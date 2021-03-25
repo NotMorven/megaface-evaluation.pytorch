@@ -28,18 +28,21 @@ import cv2
 import sklearn
 from sklearn.preprocessing import normalize
 from PIL import Image
+from tqdm import tqdm
 
 # import mxnet as mx
 # from mxnet import ndarray as nd
 import torch
+import torch.nn.functional as F
 from torchvision import transforms
 # import model here
 from models.sphere20a import sphere20a
 
 
 data_transforms = transforms.Compose([
-    transforms.RandomHorizontalFlip(),
+    # transforms.RandomHorizontalFlip(),
     # faceNormToTensor(mean=128, std=128)  # custom pre-processing layer, but it's unnecessary
+    transforms.Resize(size=(112, 96)),
     transforms.ToTensor(),
     transforms.Normalize([0.5], [0.5])
 ])
@@ -66,18 +69,23 @@ def read_img(image_path, mode='pil'):
         return img
 
 
-def get_feature(imgs, nets):
+def get_feature(imgs, nets, device):
     count = len(imgs)
     # image_shape = [int(x) for x in args.image_size.split(',')]
     # data = mx.nd.zeros(shape=(count * 2, 3, imgs[0].shape[0], imgs[0].shape[1]))
-    data = torch.zeros((count * 2, 3, imgs[0].size[1], imgs[0].size[0]))  # imgs is list of PIL data
+    # data = torch.zeros((count * 2, 3, imgs[0].size[1], imgs[0].size[0]))  # imgs is list of PIL data
+    data = torch.zeros((count * 2, 3, 112, 96))  # imgs is list of PIL data
     for idx, img in enumerate(imgs):
         # pil formatted data for pytorch
         for flipid in [0, 0]:
             if flipid == 1:
                 img = img.transpose(Image.FLIP_LEFT_RIGHT)
             img_tensor = data_transforms(img)  # return tensor in shape(c, h. w)
+            # rs_tensor = transforms.functional.resize(img=img_tensor, size=(112, 96))
+            # rs_tensor = torch.nn.functional.interpolate()
             data[count * flipid + idx] = img_tensor  # tensor data in shape(n, c, h, w)
+
+    data = data.to(device)
 
         # # this block is for cv2 format and mxnet
         # img = img[:, :, ::-1]  # to rgb
@@ -94,7 +102,9 @@ def get_feature(imgs, nets):
         # db = mx.io.DataBatch(data=(data,))
         # net.model.forward(db, is_train=False)
         # x = net.model.get_outputs()[0].asnumpy()
-        x = net(data).cpu().numpy()
+
+        with torch.no_grad():
+            x = net(data).detach().cpu().numpy()
         embedding = x[0:count, :] + x[count:, :]
         embedding = sklearn.preprocessing.normalize(embedding)
         # print('emb', embedding.shape)
@@ -112,11 +122,11 @@ def write_bin(path, feature):
         f.write(struct.pack("%df" % len(feature), *feature))
 
 
-def get_and_write(buffer, nets):
+def get_and_write(buffer, nets, device):
     imgs = []
     for k in buffer:
         imgs.append(k[0])
-    features = get_feature(imgs, nets)
+    features = get_feature(imgs, nets, device)
     # print(np.linalg.norm(feature))
     assert features.shape[0] == len(buffer)
     for ik, k in enumerate(buffer):
@@ -142,6 +152,7 @@ def main(args):
         net = sphere20a().to(device)
         net_state = torch.load(model, map_location=device)
         net.load_state_dict(net_state['model'], strict=False)
+        net.eval()
         nets.append(net)
 
         # vec = model.split(',')
@@ -165,9 +176,11 @@ def main(args):
     i = 0
     succ = 0
     buffer = []
-    for line in open(args.facescrub_lst, 'r'):
+    pbar = tqdm(open(args.facescrub_lst, 'r'))
+    for line in pbar:  ##############
         if i % 1000 == 0:
-            print("writing fs", i, succ)
+            # print("writing fs", i, succ)
+            pbar.set_description("writing fs, i:{}, succ:{}".format(i, succ))           ###################
         i += 1
         image_path = line.strip()
         _path = image_path.split('/')
@@ -184,21 +197,23 @@ def main(args):
         item = (img, out_path)
         buffer.append(item)
         if len(buffer) == args.batch_size:
-            get_and_write(buffer, nets)  # extract feature
+            get_and_write(buffer, nets, device)  # extract feature
             buffer = []
         succ += 1
 
     if len(buffer) > 0:
-        get_and_write(buffer, nets)
+        get_and_write(buffer, nets, device)
         buffer = []
     print('fs stat', i, succ)
 
     i = 0
     succ = 0
     buffer = []
-    for line in open(args.megaface_lst, 'r'):
+    pbar_mega = tqdm(open(args.megaface_lst, 'r'))
+    for line in pbar_mega:
         if i % 1000 == 0:
-            print("writing mf", i, succ)
+            # print("writing mf", i, succ)
+            pbar.set_description("writing fs, i:{}, succ:{}".format(i, succ))  ###################
         i += 1
         image_path = line.strip()
         _path = image_path.split('/')
@@ -217,11 +232,11 @@ def main(args):
         item = (img, out_path)
         buffer.append(item)
         if len(buffer) == args.batch_size:
-            get_and_write(buffer, nets)
+            get_and_write(buffer, nets, device)
             buffer = []
         succ += 1
     if len(buffer) > 0:
-        get_and_write(buffer, nets)
+        get_and_write(buffer, nets, device)
         buffer = []
     print('mf stat', i, succ)
 
@@ -229,7 +244,7 @@ def main(args):
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--batch_size', type=int, help='', default=8)
+    parser.add_argument('--batch_size', type=int, help='', default=128)
     parser.add_argument('--image_size', type=str, help='', default='3,112,96')
     parser.add_argument('--gpu', type=int, help='', default=0)
     parser.add_argument('--algo', type=str, help='', default='LMC')

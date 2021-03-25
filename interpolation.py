@@ -130,22 +130,28 @@ if __name__ == '__main__':
         0.8747673034667969
     ]
 
-    print '\n===> interpolating for x_t=', x_t
+    # print '\n===> interpolating for x_t=', x_t
+    print('\n===> interpolating for x_t=', x_t)  # ##################################################
 
     y_t = nearest_neighbor_interp(x_t, xs, ys)
-    print '\n---> NN interpolation: y = %g' % (y_t)
+    # print '\n---> NN interpolation: y = %g' % (y_t)
+    print('\n---> NN interpolation: y = %g' % (y_t))  # ##################################################
 
     y_t = linear_interp(x_t, xs[1], xs[2], ys[1], ys[2])
-    print '\n---> Regular lineary interpolation: y_t = ', y_t
+    # print '\n---> Regular lineary interpolation: y_t = ', y_t
+    print('\n---> Regular lineary interpolation: y_t = ', y_t)  # ##################################################
 
     y_t = linear_interp_logx(x_t, xs[1], xs[2], ys[1], ys[2])
-    print '\n---> Lineary interpolation using log10(x_t): y_t = ', y_t
+    # print '\n---> Lineary interpolation using log10(x_t): y_t = ', y_t
+    print('\n---> Lineary interpolation using log10(x_t): y_t = ', y_t)  # ##################################################
 
     poly_degrees = [1, 2, 3]
 
     for deg in poly_degrees:
         y_t = np_polyfit_interp(x_t, xs, ys, deg)
-        print '\n---> Numpy polyfit (deg=%d) interpolation: y = %g' % (deg, y_t)
+        # print '\n---> Numpy polyfit (deg=%d) interpolation: y = %g' % (deg, y_t)
+        print('\n---> Numpy polyfit (deg=%d) interpolation: y = %g' % (deg, y_t))  # ##################################################
 
         y_t = np_polyfit_interp_logx(x_t, xs, ys, deg)
-        print '\n---> Numpy polyfit (deg=%d, logx) interpolation: y = %g' % (deg, y_t)
+        # print '\n---> Numpy polyfit (deg=%d, logx) interpolation: y = %g' % (deg, y_t)
+        print('\n---> Numpy polyfit (deg=%d, logx) interpolation: y = %g' % (deg, y_t))  # ##################################################

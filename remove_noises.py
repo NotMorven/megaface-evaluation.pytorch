@@ -11,6 +11,7 @@ import numpy as np
 import argparse
 import struct
 import cv2
+from tqdm import tqdm
 # import mxnet as mx
 # from mxnet import ndarray as nd
 
@@ -57,9 +58,11 @@ def main(args):
     i = 0
     fname2center = {}
     noises = []
-    for line in open(args.facescrub_lst, 'r'):
+    fs_bar = tqdm(open(args.facescrub_lst, 'r'))
+    for line in fs_bar:
         if i % 1000 == 0:
-            print("reading fs", i)
+            # print("reading fs", i)
+            fs_bar.set_description("reading fs: {}".format(i))
         i += 1
         image_path = line.strip()
         _path = image_path.split('/')
@@ -109,9 +112,11 @@ def main(args):
 
     i = 0
     nrof_noises = 0
-    for line in open(args.megaface_lst, 'r'):
+    mf_bar = tqdm(open(args.megaface_lst, 'r'))
+    for line in mf_bar:
         if i % 1000 == 0:
-            print("reading mf", i)
+            # print("reading mf", i)
+            mf_bar.set_description("reading mf: {}".format(i))
         i += 1
         image_path = line.strip()
         _path = image_path.split('/')

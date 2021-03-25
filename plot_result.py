@@ -57,7 +57,8 @@ colors = generate_plot_colors()
 
 def interp_target_tpr(roc, target_fpr):
     if(target_fpr < roc[0][0] or target_fpr > roc[0][-1]):
-        print 'target_fpr out of bound, will return -1'
+        # print 'target_fpr out of bound, will return -1'
+        print('target_fpr out of bound, will return -1')  # #########################################
         return -1.0
 
     # # This interpolation might be the one that MegaFace officially uses
@@ -90,7 +91,8 @@ def interp_target_tpr(roc, target_fpr):
 
 def interp_target_rank_recall(cmc, target_rank):
     if(target_rank < cmc[0][0] or target_rank > cmc[0][-1]):
-        print 'target_fpr out of bound, will return -1'
+        # print 'target_fpr out of bound, will return -1'
+        print('target_fpr out of bound, will return -1')  # #########################################
         return -1.0
 
     # This interpolation might be the one that MegaFace officially uses
@@ -118,7 +120,8 @@ def interp_target_rank_recall(cmc, target_rank):
 
 def load_result_data(folder, probe_name):
     #    n_distractors = generate_n_distractors()
-    print '===> Load result data from ', folder
+    # print '===> Load result data from ', folder
+    print ('===> Load result data from ', folder)  # #########################################
 
     all_files = os.listdir(folder)
 #    print 'all_files: ', all_files
@@ -197,13 +200,15 @@ def calc_target_tpr_and_rank(rocs, rank_1, rank_10, save_dir,
 
     write_string = 'TPR@FPR=%g at different #distractors\n' % target_fpr
     write_string += '#distractors  TPR\n'
-    print write_string
+    # print write_string
+    print(write_string)  # #########################################
     fp_tpr.write(write_string)
 
     for i, roc in enumerate(rocs):
         target_tpr = interp_target_tpr(roc, target_fpr)
         write_string = '%7d %7.6f\n' % (n_distractors[i], target_tpr)
-        print write_string
+        # print write_string
+        print(write_string)  # #########################################
         fp_tpr.write(write_string)
 
         if fp_tpr_sum:
@@ -215,7 +220,8 @@ def calc_target_tpr_and_rank(rocs, rank_1, rank_10, save_dir,
 
     fp_tpr.close()
 
-    print '===> Save Rank_1 under different #distractors for method: ', method_label
+    # print '===> Save Rank_1 under different #distractors for method: ', method_label
+    print('===> Save Rank_1 under different #distractors for method: ', method_label)  # #########################################
     fp_rank = open(fn_rank, 'w')
 
     write_string_sum = ''
@@ -224,24 +230,28 @@ def calc_target_tpr_and_rank(rocs, rank_1, rank_10, save_dir,
 
     write_string = 'Rank_1 recall at different #distractors\n'
     write_string += '#distractors  recall\n'
-    print write_string
+    # print write_string
+    print(write_string)  # #########################################
     fp_rank.write(write_string)
 
     for i, rank in enumerate(rank_1):
         write_string = '%7d  %7.6f\n' % (n_distractors[i], rank)
-        print write_string
+        # print write_string
+        print(write_string)  # #########################################
         fp_rank.write(write_string)
         if fp_rank_sum:
             write_string_sum += "\t{:<16.6f}".format(rank)
 
     write_string = '\nRank_10 recall at different #distractors\n'
     write_string += '#distractors  recall\n'
-    print write_string
+    # print write_string
+    print(write_string)  # #########################################
     fp_rank.write(write_string)
 
     for i, rank in enumerate(rank_10):
         write_string = '%7d  %7.6f\n' % (n_distractors[i], rank)
-        print write_string
+        # print write_string
+        print(write_string)  # #########################################
         fp_rank.write(write_string)
         if fp_rank_sum:
             write_string_sum += "\t{:<16.6f}".format(rank)
@@ -275,7 +285,8 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
 
 #    n_distractors = generate_n_distractors()
 
-    print 'n_distractors: ', n_distractors
+    # print 'n_distractors: ', n_distractors
+    print('n_distractors: ', n_distractors)  # #########################################
 
     if your_method_dirs is None:
         your_method_dirs = []
@@ -317,8 +328,8 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
 
     n_results = len(your_method_dirs)
     for j in range(n_results):
-        print '===> Loading data for probset {} from: {}'.format(
-            probe_name, your_method_dirs[j])
+        # print '===> Loading data for probset {} from: {}'.format(probe_name, your_method_dirs[j])
+        print('===> Loading data for probset {} from: {}'.format(probe_name, your_method_dirs[j]))  # #########################################
 
         # your_result = load_your_result(your_method_dirs, probe_name, feat_ending)
         your_result = load_result_data(your_method_dirs[j], probe_name)
@@ -336,7 +347,8 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
                                  fp_tpr_sum=fp_tpr_sum,
                                  fp_rank_sum=fp_rank_sum)
 
-        print '===> Plotting Verification ROC under different #distractors'
+        # print '===> Plotting Verification ROC under different #distractors'
+        print('===> Plotting Verification ROC under different #distractors')  # #########################################
         fig = plt.figure(figsize=(16, 12), dpi=100)
 
         labels = [str(it) for it in n_distractors]
@@ -385,7 +397,8 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
                            'roc_under_diff_distractors_%s.png' % your_method_labels[j])
         fig.savefig(save_fn, bbox_inches='tight')
 
-        print '===> Plotting Identification CMC under different #distractors'
+        # print '===> Plotting Identification CMC under different #distractors'
+        print('===> Plotting Identification CMC under different #distractors')  # #########################################
         fig = plt.figure(figsize=(16, 12), dpi=100)
 
         color_idx = 0
@@ -423,17 +436,20 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
                            % your_method_labels[j])
         fig.savefig(save_fn, bbox_inches='tight')
 
-    print '===> Load result data for all the other methods'
+    # print '===> Load result data for all the other methods'
+    print('===> Load result data for all the other methods')  # #########################################
     other_methods_list = []
     other_methods_data = {}
 
     if other_methods_dir:
         other_methods_list = os.listdir(other_methods_dir)
-        print '===> other_methods_list before cleaning: ', other_methods_list
+        # print '===> other_methods_list before cleaning: ', other_methods_list
+        print('===> other_methods_list before cleaning: ', other_methods_list)  # #########################################
 
         for it in other_methods_list:
             if not osp.isdir(osp.join(other_methods_dir, it)):
-                print "Remove flies(not folders) from other_methods_list"
+                # print "Remove flies(not folders) from other_methods_list"
+                print("Remove flies(not folders) from other_methods_list")  # #########################################
                 other_methods_list.remove(it)
 
         for dd in your_method_dirs:
@@ -444,13 +460,16 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
                 for it in other_methods_list:
                     #                    print it
                     if dd_base == it:
-                        print "Remove your_method_dirs from other_methods_list"
+                        # print "Remove your_method_dirs from other_methods_list"
+                        print("Remove your_method_dirs from other_methods_list")  # #########################################
                         other_methods_list.remove(it)
 
-    print '===> other_methods_list after cleaning: ', other_methods_list
+    # print '===> other_methods_list after cleaning: ', other_methods_list
+    print('===> other_methods_list after cleaning: ', other_methods_list)  # #########################################
 
     if not (your_method_dirs or other_methods_list):
-        print '===> No valid methods found, neither yours or others.'
+        # print '===> No valid methods found, neither yours or others.'
+        print('===> No valid methods found, neither yours or others.')  # #########################################
         pass
 
     # ['3divi',
@@ -492,7 +511,8 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
     # plot_names = ['1M']
 
     for i, pn in enumerate(plot_names):
-        print '===> Plotting ROC under %s distractors for your methods' % pn
+        # print '===> Plotting ROC under %s distractors for your methods' % pn
+        print('===> Plotting ROC under %s distractors for your methods' % pn)  # #########################################
         fig = plt.figure(figsize=(20, 10), dpi=200)
         ax = plt.subplot(111)
 
@@ -511,7 +531,7 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
             color_idx += 1
 
         if other_methods_list:
-            print '===> Plotting ROC under %s distractors for all the other methods' % pn
+            print('===> Plotting ROC under %s distractors for all the other methods' % pn)  # #########################################
 
             for name in other_methods_list:
                 if color_idx < len(colors):
@@ -556,7 +576,7 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
         fig.savefig(osp.join(save_dir, 'verification_roc_%s.png' % pn),
                     bbox_inches='tight')
 
-        print '===> Plotting recall vs rank under %s distractors for your methods' % pn
+        print('===> Plotting recall vs rank under %s distractors for your methods' % pn)  # #########################################
         fig = plt.figure(figsize=(20, 10), dpi=200)
         ax = plt.subplot(111)
         color_idx = 0
@@ -574,7 +594,8 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
             color_idx += 1
 
         if other_methods_list:
-            print '===> Plotting recall vs rank under %s distractors for all the other methods' % pn
+            # print '===> Plotting recall vs rank under %s distractors for all the other methods' % pn
+            print('===> Plotting recall vs rank under %s distractors for all the other methods' % pn)  # #########################################
 
             for name in other_methods_list:
                 ax.semilogx(other_methods_data[name]['cmcs'][i + 3][0],
@@ -614,7 +635,8 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
         fig.savefig(osp.join(save_dir, 'identification_recall_vs_rank_%s.png' % pn),
                     bbox_inches='tight')
 
-    print '===> Plotting rank_1 vs #distractors for your method'
+    # print '===> Plotting rank_1 vs #distractors for your method'
+    print('===> Plotting rank_1 vs #distractors for your method')  # #########################################
     fig = plt.figure(figsize=(20, 10), dpi=100)
     ax = plt.subplot(111)
 
@@ -631,7 +653,8 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
         color_idx += 1
 
     if other_methods_list:
-        print '===> Plotting rank_1 vs #distractors for all the other methods'
+        # print '===> Plotting rank_1 vs #distractors for all the other methods'
+        print('===> Plotting rank_1 vs #distractors for all the other methods')  # #########################################
 
         for name in other_methods_list:
             if color_idx < len(colors):
@@ -684,11 +707,22 @@ def plot_megaface_result(your_method_dirs, your_method_labels,
 if __name__ == '__main__':
     your_method_dirs = [
         # '/media/3T_disk/my_datasets/megaface/mobilefacenet_results',
-        '/media/3T_disk/my_datasets/megaface/r100ii_results',
+        # '/media/3T_disk/my_datasets/megaface/r100ii_results',
+        # '/home/morven/MorvenWorkspace/megaface-evaluation.pytorch/res/NormFace-2020-12-08-23-36_results',
+        # '/home/morven/MorvenWorkspace/megaface-evaluation.pytorch/res/NormFace-Intra-2021-01-10-02-19_results',
+        # '/home/morven/MorvenWorkspace/megaface-evaluation.pytorch/res/MASoftmax-2020-12-27-23-09_results',
+        # '/home/morven/MorvenWorkspace/megaface-evaluation.pytorch/res/MASoftmax-Intra-server-2020-12-24-03-41_results',
+        '/home/morven/MorvenWorkspace/megaface-evaluation.pytorch/res/MASoftmax-Intra-2020-12-24-22-25_results',
     ]
     your_method_labels = [
         # 'mobilefacenet',
-        'insightface-r100'
+        # 'insightface-r100'
+        # 'SOFTMAX',
+        # 'NormFace-2020-12-08-23-36',
+        # 'NormFace-Intra-2021-01-10-02-19',
+        # 'MASoftmax-2020-12-27-23-09',
+        # 'MASoftmax-Intra-server-2020-12-24-03-41',
+        'MASoftmax-Intra-2020-12-24-22-25',
     ]
 
     probesets = ['facescrub']
@@ -703,7 +737,7 @@ if __name__ == '__main__':
     show_plot = False
 
     for probe_name in probesets:
-        save_dir = './megaface_%s_insightface_r100' % probe_name
+        save_dir = './plot_res/megaface_{}_{}'.format(probe_name, your_method_labels[0])
         plot_megaface_result(your_method_dirs, your_method_labels,
                              probe_name,
                              save_dir,
